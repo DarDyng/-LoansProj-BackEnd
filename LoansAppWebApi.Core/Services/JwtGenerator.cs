@@ -30,7 +30,8 @@ namespace LoansAppWebApi.Core.Services
             var authClaims = new List<Claim>
             {
                 new Claim(ClaimTypes.Role, AuthConstants.UserRoles.User),
-                new Claim(ClaimTypes.Sid, userId.ToString())
+                new Claim(ClaimTypes.Email, userId.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
             var token = new JwtSecurityToken(

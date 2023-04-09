@@ -22,6 +22,17 @@ builder.Services.AddIdentity<User, Role>()
     .AddUserStore<UserStore<User, Role, ApplicationDbContext, Guid>>()
     .AddRoleStore<RoleStore<Role, ApplicationDbContext, Guid>>();
 
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    // Default Password settings.
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequireUppercase = false;
+    options.Password.RequiredLength = 6;
+    options.Password.RequiredUniqueChars = 0;
+});
+
 builder.Services.AddCors(opt =>
 {
     var frontUrl = builder.Configuration.GetValue<string>("front-url");

@@ -9,6 +9,13 @@ namespace LoansAppWebApi.Models.DbModels
 {
     public class User : IdentityUser<Guid>
     {
+        public AuthType AuthType { get; set; }
         public ICollection<Loans> Loans { get; set; }
+    }
+
+    public enum AuthType
+    {
+        Google,
+        Normal
     }
 }
