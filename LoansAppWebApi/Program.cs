@@ -1,18 +1,32 @@
 using LoansAppWebApi.Core;
+using LoansAppWebApi.Core.Filters;
 using LoansAppWebApi.Core.Services;
 using LoansAppWebApi.Models.Configuration;
 using LoansAppWebApi.Models.DbModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;
+});
 
-builder.Services.AddControllers();
+builder.Services.AddControllers((options) =>
+{
+    // model validation
+    options.Filters.Add(new ValidateModelFilter());
+
+    // badrequest and unauthorized formatter
+    options.Filters.Add(new HttpResponseFilter());
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -31,6 +45,7 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequireUppercase = false;
     options.Password.RequiredLength = 6;
     options.Password.RequiredUniqueChars = 0;
+    options.User.RequireUniqueEmail = true;
 });
 
 builder.Services.AddCors(opt =>
@@ -74,6 +89,17 @@ builder.Services.Configure<JWTConfiguration>(builder.Configuration.GetSection("J
 
 
 var app = builder.Build();
+
+// Migrate latest database changes during startup
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider
+        .GetRequiredService<ApplicationDbContext>();
+
+    // Here is the migration executed
+    dbContext.Database.Migrate();
+};
+
 
 app.UseCors();
 

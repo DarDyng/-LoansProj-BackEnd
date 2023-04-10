@@ -1,6 +1,7 @@
 ﻿using Google.Apis.Auth;
 using LoansAppWebApi.Core;
 using LoansAppWebApi.Core.Constants;
+using LoansAppWebApi.Core.Filters;
 using LoansAppWebApi.Core.Services;
 using LoansAppWebApi.Models.Configuration;
 using LoansAppWebApi.Models.DbModels;
@@ -19,7 +20,7 @@ namespace LoansAppWebApi.Controllers
 {
     [Route("api/account")]
     [ApiController]
-    public class AuthenticationController : ControllerBase
+    public class AuthenticationController : Controller
     {
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<Role> roleManager;
@@ -91,6 +92,7 @@ namespace LoansAppWebApi.Controllers
 
         [HttpPost]
         [Route("login")]
+        [ApiExceptionFilter]
         public async Task<ActionResult> Authenticate(
             LoginModel loginModel)
         {
@@ -144,6 +146,7 @@ namespace LoansAppWebApi.Controllers
         }
 
         [HttpPost]
+        //[HttpResponseFilter]
         [Route("register")]
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
@@ -160,7 +163,7 @@ namespace LoansAppWebApi.Controllers
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
-
+            // here
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
 

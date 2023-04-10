@@ -51,7 +51,7 @@ namespace LoansAppWebApi.Core.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Loans", t =>
+                    b.ToTable("Loans", null, t =>
                         {
                             t.HasCheckConstraint("CK_Loans_EndDate", "[EndDate] >= [StartDate]");
                         });
