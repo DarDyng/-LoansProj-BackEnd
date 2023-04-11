@@ -9,9 +9,9 @@ using LoansAppWebApi.Models.DTO_s.Requests;
 using LoansAppWebApi.Models.DTO_s.Resposnes;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json.Schema;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -77,6 +77,9 @@ namespace LoansAppWebApi.Controllers
                         return BadRequest("O-ops, something went wrong");
 
                 }
+
+                if (user.AuthType == AuthType.Normal)
+                    return Unauthorized("This user already registered!");
 
                 return Ok(new AuthenticatedUserResposne
                 {
@@ -150,9 +153,12 @@ namespace LoansAppWebApi.Controllers
         [Route("register")]
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
-            var userExists = await _userManager.FindByNameAsync(model.Username);
-            if (userExists != null)
-                return BadRequest();
+            // could be changed, but good for now
+            if (await _userManager.Users.AnyAsync(x => x.Email == model.Email))
+                return BadRequest("User already registered with such email");
+
+            if (await _userManager.Users.AnyAsync(x => x.UserName == model.Username))
+                return BadRequest("User already registered with such username");
 
             User user = new User()
             {

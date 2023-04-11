@@ -16,10 +16,6 @@ namespace LoansAppWebApi.Core.Filters
     {
         public void OnActionExecuted(ActionExecutedContext context)
         {
-            HttpStatusCode statusCode;
-            var stackTrace = string.Empty;
-            var messages = new List<string>();
-
             switch (context.Result)
             {
                 case BadRequestObjectResult badRequestObject:
@@ -27,7 +23,7 @@ namespace LoansAppWebApi.Core.Filters
                         context.HttpContext.Response.ContentType = "application/json";
                         if (badRequestObject.Value is IEnumerable<IdentityError> errors)
                         {
-                            context.Result = new JsonResult(errors.Select(x => $"{x.Description}"));
+                            context.Result = new BadRequestObjectResult(errors.Select(x => $"{x.Description}"));
                             return;
                         }
                         else if (badRequestObject.Value is IEnumerable<string> errors2)
@@ -58,7 +54,7 @@ namespace LoansAppWebApi.Core.Filters
                 default:
                     break;
             }
-        }
+          }
 
         public void OnActionExecuting(ActionExecutingContext context)
         {
