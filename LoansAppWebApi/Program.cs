@@ -54,7 +54,7 @@ builder.Services.AddCors(opt =>
 
     opt.AddDefaultPolicy(builderCors =>
     {
-        builderCors.WithOrigins(frontUrl).AllowAnyMethod().AllowAnyHeader().
+        builderCors.WithOrigins(frontUrl!).AllowAnyMethod().AllowAnyHeader().
         WithExposedHeaders(new string[] { "totalAmountOfRecords" });
     });
 });
