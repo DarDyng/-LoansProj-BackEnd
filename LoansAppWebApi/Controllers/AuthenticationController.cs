@@ -99,6 +99,9 @@ namespace LoansAppWebApi.Controllers
         public async Task<ActionResult> Authenticate(
             LoginModel loginModel)
         {
+
+            var userFromContextUser = HttpContext.User;
+
             var user = await _userManager.FindByEmailAsync(loginModel.Email);
 
             if (user == null)
@@ -155,10 +158,10 @@ namespace LoansAppWebApi.Controllers
         {
             // could be changed, but good for now
             if (await _userManager.Users.AnyAsync(x => x.Email == model.Email))
-                return BadRequest("User already registered with such email");
+                return BadRequest("User is already registered with such email");
 
             if (await _userManager.Users.AnyAsync(x => x.UserName == model.Username))
-                return BadRequest("User already registered with such username");
+                return BadRequest("User is already registered with such username");
 
             User user = new User()
             {
@@ -180,7 +183,7 @@ namespace LoansAppWebApi.Controllers
 
             await _userManager.AddToRoleAsync(user, AuthConstants.UserRoles.User);
 
-            return Ok();
+            return Ok("You successfully registered!");
         }
     }
 }
