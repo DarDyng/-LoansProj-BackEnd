@@ -1,14 +1,13 @@
-﻿using System;
+﻿using LoansAppWebApi.Models.DbModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Security.Permissions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LoansAppWebApi.Models.DbModels
+namespace LoansAppWebApi.Models.DTO_s
 {
-    public class Loans
+    public class LoanDTO
     {
         public Guid Id { get; set; }
         public DateTime StartDate { get; set; }
@@ -16,8 +15,6 @@ namespace LoansAppWebApi.Models.DbModels
         public decimal SumOfLoan { get; set; }
         public decimal PercentsInYear { get; set; }
         public string Name { get; set; }
-
-        public User User { get; set; }
-        public Guid UserId { get; set; }
+        public bool IsPaid { get; set; }
     }
 }

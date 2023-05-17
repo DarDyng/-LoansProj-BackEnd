@@ -47,6 +47,8 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.User.RequireUniqueEmail = true;
 });
 
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 builder.Services.AddCors(opt =>
 {
     var frontUrl = builder.Configuration.GetValue<string>("front-url");

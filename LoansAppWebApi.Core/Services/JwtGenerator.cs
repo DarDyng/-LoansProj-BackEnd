@@ -1,6 +1,7 @@
 ﻿using LoansAppWebApi.Core.Constants;
 using LoansAppWebApi.Core.Interfaces;
 using LoansAppWebApi.Models.Configuration;
+using LoansAppWebApi.Models.DbModels;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -22,15 +23,16 @@ namespace LoansAppWebApi.Core.Services
             this._jwtConfiguration = options.Value;
         }
 
-        public string GenerateToken(string userId)
+        public string GenerateToken(string email, string userId)
         {
             var authSigngingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfiguration.AccessTokenSecret));
             var tokenHandler = new JwtSecurityTokenHandler();
 
             var authClaims = new List<Claim>
             {
+                new Claim(AuthConstants.ClaimNames.Id, userId.ToString()),
                 new Claim(ClaimTypes.Role, AuthConstants.UserRoles.User),
-                new Claim(ClaimTypes.Email, userId.ToString()),
+                new Claim(ClaimTypes.Email, email.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 

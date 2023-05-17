@@ -8,6 +8,6 @@ namespace LoansAppWebApi.Core.Interfaces
 {
     public interface IJwtGenerator
     {
-        string GenerateToken(string userId);
+        string GenerateToken(string email, string userId);
     }
 }

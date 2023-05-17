@@ -65,6 +65,7 @@ namespace LoansAppWebApi.Controllers
 
                     user = new User()
                     {
+                        Id = Guid.NewGuid(),
                         UserName = payload.Email,
                         Email = payload.Email,
                         EmailConfirmed = true,
@@ -83,7 +84,7 @@ namespace LoansAppWebApi.Controllers
 
                 return Ok(new AuthenticatedUserResposne
                 {
-                    Token = jwtGenerator.GenerateToken(payload.Email),
+                    Token = jwtGenerator.GenerateToken(payload.Email, user.Id.ToString()),
                     Expiration = DateTime.Now.AddMinutes(jWTConfiguration.AccessTokenExpirationMinutes)
                 });
             }
@@ -99,7 +100,6 @@ namespace LoansAppWebApi.Controllers
         public async Task<ActionResult> Authenticate(
             LoginModel loginModel)
         {
-
             var userFromContextUser = HttpContext.User;
 
             var user = await _userManager.FindByEmailAsync(loginModel.Email);
