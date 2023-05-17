@@ -42,7 +42,7 @@ namespace LoansAppWebApi.Core.Services
                 expires: DateTime.Now.AddMinutes(_jwtConfiguration.AccessTokenExpirationMinutes),
                 claims: authClaims,
                 signingCredentials: new SigningCredentials(authSigngingKey, SecurityAlgorithms.HmacSha256)
-                );
+            );
 
             return tokenHandler.WriteToken(token);
         }
