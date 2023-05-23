@@ -9,7 +9,7 @@ namespace LoansAppWebApi.Models.DTO_s.Requests
 {
     public class RegisterModel
     {
-        [Required(ErrorMessage = "User Name is required")]
+        [Required(ErrorMessage = "User CategoryName is required")]
         public string Username { get; set; }
 
         [EmailAddress]

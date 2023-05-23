@@ -22,10 +22,27 @@ namespace LoansAppWebApi.Core.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("LoansAppWebApi.Models.DbModels.CategoryId", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("CategoryName")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Categories");
+                });
+
             modelBuilder.Entity("LoansAppWebApi.Models.DbModels.Loans", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CategoryId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("EndDate")
@@ -47,10 +64,15 @@ namespace LoansAppWebApi.Core.Migrations
                     b.Property<decimal>("SumOfLoan")
                         .HasColumnType("DECIMAL(18, 4)");
 
+                    b.Property<float>("SumOfPaidLoan")
+                        .HasColumnType("real");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
 
                     b.HasIndex("UserId");
 
@@ -262,11 +284,19 @@ namespace LoansAppWebApi.Core.Migrations
 
             modelBuilder.Entity("LoansAppWebApi.Models.DbModels.Loans", b =>
                 {
+                    b.HasOne("LoansAppWebApi.Models.DbModels.CategoryId", "CategoryId")
+                        .WithMany("Loans")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("LoansAppWebApi.Models.DbModels.User", "User")
                         .WithMany("Loans")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("CategoryId");
 
                     b.Navigation("User");
                 });
@@ -320,6 +350,11 @@ namespace LoansAppWebApi.Core.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("LoansAppWebApi.Models.DbModels.CategoryId", b =>
+                {
+                    b.Navigation("Loans");
                 });
 
             modelBuilder.Entity("LoansAppWebApi.Models.DbModels.User", b =>

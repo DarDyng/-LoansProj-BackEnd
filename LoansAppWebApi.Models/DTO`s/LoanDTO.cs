@@ -12,9 +12,11 @@ namespace LoansAppWebApi.Models.DTO_s
         public Guid Id { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
-        public decimal SumOfLoan { get; set; }
-        public decimal PercentsInYear { get; set; }
+        public float SumOfLoan { get; set; }
+        public float SumOfPaidLoan { get; set; }
+        public float PercentsInYear { get; set; }
         public string Name { get; set; }
+        public string CategoryId { get; set; }
         public bool IsPaid { get; set; }
     }
 }

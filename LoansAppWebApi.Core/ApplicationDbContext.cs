@@ -47,5 +47,6 @@ namespace LoansAppWebApi.Core
         }
 
         public DbSet<Loans> Loans { get; set; }
+        public DbSet<Category> Categories { get; set; }
     }
 }

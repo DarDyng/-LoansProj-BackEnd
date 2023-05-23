@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LoansAppWebApi.Core.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230409203706_Google type add")]
-    partial class Googletypeadd
+    [Migration("20230523134236_changes")]
+    partial class changes
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,14 +25,34 @@ namespace LoansAppWebApi.Core.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("LoansAppWebApi.Models.DbModels.Category", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("CategoryName")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Categories");
+                });
+
             modelBuilder.Entity("LoansAppWebApi.Models.DbModels.Loans", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime");
+
+                    b.Property<bool>("IsPaid")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -47,10 +67,15 @@ namespace LoansAppWebApi.Core.Migrations
                     b.Property<decimal>("SumOfLoan")
                         .HasColumnType("DECIMAL(18, 4)");
 
+                    b.Property<float>("SumOfPaidLoan")
+                        .HasColumnType("real");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
 
                     b.HasIndex("UserId");
 
@@ -262,11 +287,19 @@ namespace LoansAppWebApi.Core.Migrations
 
             modelBuilder.Entity("LoansAppWebApi.Models.DbModels.Loans", b =>
                 {
+                    b.HasOne("LoansAppWebApi.Models.DbModels.Category", "Category")
+                        .WithMany("Loans")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("LoansAppWebApi.Models.DbModels.User", "User")
                         .WithMany("Loans")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Category");
 
                     b.Navigation("User");
                 });
@@ -320,6 +353,11 @@ namespace LoansAppWebApi.Core.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("LoansAppWebApi.Models.DbModels.Category", b =>
+                {
+                    b.Navigation("Loans");
                 });
 
             modelBuilder.Entity("LoansAppWebApi.Models.DbModels.User", b =>
