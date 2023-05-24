@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LoansAppWebApi.Core;
 using LoansAppWebApi.Core.Constants;
+using LoansAppWebApi.Core.Interfaces;
 using LoansAppWebApi.Models.DbModels;
 using LoansAppWebApi.Models.DTO_s;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -17,14 +18,12 @@ namespace LoansAppWebApi.Controllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class CategoriesController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<User> _userManager;
+        private readonly ICategoryService _categoryService;
         private readonly IMapper _mapper;
 
-        public CategoriesController(ApplicationDbContext context, UserManager<User> userManager, IMapper mapper)
+        public CategoriesController(ICategoryService categoryService, IMapper mapper)
         {
-            _context = context;
-            _userManager = userManager;
+            _categoryService = categoryService;
             _mapper = mapper;
         }
 
@@ -32,11 +31,9 @@ namespace LoansAppWebApi.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<CategoryDTO>>> GetCategories()
         {
-            var categories = await _context.Categories.ToListAsync();
+            var categories = await _categoryService.GetAllCategories();
 
-            var res = _mapper.Map<IEnumerable<Category>, IEnumerable<CategoryDTO>>(categories);
-
-            return Ok(res);
+            return Ok(categories);
         }
     }
 }
