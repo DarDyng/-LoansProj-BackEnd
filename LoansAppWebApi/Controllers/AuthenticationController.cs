@@ -26,7 +26,6 @@ namespace LoansAppWebApi.Controllers
         private readonly IConfiguration _configuration;
         private readonly JWTConfiguration jWTConfiguration;
         private readonly JwtGenerator jwtGenerator;
-        private readonly ApplicationDbContext _context;
         private readonly IUserService _userService;
         private readonly IRoleService _roleService;
 
@@ -34,13 +33,11 @@ namespace LoansAppWebApi.Controllers
             IConfiguration configuration,
             IOptions<JWTConfiguration> options,
             JwtGenerator jwtGenerator,
-            ApplicationDbContext context,
             IUserService userService)
         {
             _configuration = configuration;
             this.jWTConfiguration = options.Value;
             this.jwtGenerator = jwtGenerator;
-            _context = context;
             _userService = userService;
         }
 

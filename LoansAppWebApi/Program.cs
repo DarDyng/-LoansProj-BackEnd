@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using LoansAppWebApi.Core.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -61,6 +62,10 @@ builder.Services.AddCors(opt =>
 });
 
 builder.Services.AddTransient<JwtGenerator>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<ILaonsService, LoanService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                .AddJwtBearer(opts =>
