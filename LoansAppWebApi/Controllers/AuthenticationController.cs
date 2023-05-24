@@ -15,6 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using LoansAppWebApi.Core.Interfaces;
 
 namespace LoansAppWebApi.Controllers
 {
@@ -22,26 +23,25 @@ namespace LoansAppWebApi.Controllers
     [ApiController]
     public class AuthenticationController : Controller
     {
-        private readonly UserManager<User> _userManager;
-        private readonly RoleManager<Role> roleManager;
         private readonly IConfiguration _configuration;
         private readonly JWTConfiguration jWTConfiguration;
         private readonly JwtGenerator jwtGenerator;
         private readonly ApplicationDbContext _context;
+        private readonly IUserService _userService;
+        private readonly IRoleService _roleService;
 
-        public AuthenticationController(UserManager<User> userManager,
-            RoleManager<Role> roleManager,
+        public AuthenticationController(
             IConfiguration configuration,
             IOptions<JWTConfiguration> options,
             JwtGenerator jwtGenerator,
-            ApplicationDbContext context)
+            ApplicationDbContext context,
+            IUserService userService)
         {
-            _userManager = userManager;
-            this.roleManager = roleManager;
             _configuration = configuration;
             this.jWTConfiguration = options.Value;
             this.jwtGenerator = jwtGenerator;
             _context = context;
+            _userService = userService;
         }
 
         [HttpPost]
@@ -57,7 +57,7 @@ namespace LoansAppWebApi.Controllers
 
                 // check if user exists by email in db
 
-                var user = await _userManager.FindByEmailAsync(payload.Email);
+                var user = await _userService.GetUserByEmail(payload.Email);
 
                 if (user == null)
                 {
@@ -72,7 +72,7 @@ namespace LoansAppWebApi.Controllers
                         AuthType = AuthType.Google,
                     };
 
-                    var result = await _userManager.CreateAsync(user, Guid.NewGuid().ToString());
+                    var result = await _userService.CreateUser(user, Guid.NewGuid().ToString());
 
                     if (!result.Succeeded)
                         return BadRequest("O-ops, something went wrong");
@@ -102,7 +102,7 @@ namespace LoansAppWebApi.Controllers
         {
             var userFromContextUser = HttpContext.User;
 
-            var user = await _userManager.FindByEmailAsync(loginModel.Email);
+            var user = await _userService.GetUserByEmail(loginModel.Email);
 
             if (user == null)
             {
@@ -114,12 +114,12 @@ namespace LoansAppWebApi.Controllers
                 return Unauthorized("Use google authentication insted");
             }
 
-            if (!await _userManager.CheckPasswordAsync(user, loginModel.Password))
+            if (!await _userService.CheckPasswordAsync(user, loginModel.Password))
             {
                 return BadRequest("Invalid credentionals");
             }
 
-            var roles = await _userManager.GetRolesAsync(user);
+            var roles = await _userService.GetUserRoles(user);
 
             var authClaims = new List<Claim>
                 {
@@ -157,10 +157,10 @@ namespace LoansAppWebApi.Controllers
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
             // could be changed, but good for now
-            if (await _userManager.Users.AnyAsync(x => x.Email == model.Email))
+            if (await _userService.CheckUserExistsByEmail(model.Email))
                 return BadRequest("User is already registered with such email");
 
-            if (await _userManager.Users.AnyAsync(x => x.UserName == model.Username))
+            if (await _userService.CheckUserExistsByUsername(model.Username))
                 return BadRequest("User is already registered with such username");
 
             User user = new User()
@@ -171,17 +171,18 @@ namespace LoansAppWebApi.Controllers
                 AuthType = AuthType.Normal
             };
 
-            var result = await _userManager.CreateAsync(user, model.Password);
+            var result = await _userService.CreateUser(user, model.Password);
+
             // here
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
 
-            if (!await roleManager.RoleExistsAsync(AuthConstants.UserRoles.User))
+            if (!await _roleService.CheckRoleExists(AuthConstants.UserRoles.User))
             {
-                await roleManager.CreateAsync(new Role { Name = AuthConstants.UserRoles.User });
+                await _roleService.CreateRole(new Role { Name = AuthConstants.UserRoles.User });
             }
 
-            await _userManager.AddToRoleAsync(user, AuthConstants.UserRoles.User);
+            await _userService.AddUserToRole(user, AuthConstants.UserRoles.User);
 
             return Ok("You successfully registered!");
         }
