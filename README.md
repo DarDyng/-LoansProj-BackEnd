@@ -24,3 +24,6 @@ Oleksandr Biletskyi
 
 Authentication Controller reafactor 
 https://dev.azure.com/dmytroserafym/WebProj/_git/LoansProj-BackEnd/pullrequest/5
+
+Code Review by JLW157
+https://github.com/DarDyng/-LoansProj-BackEnd/pull/1
