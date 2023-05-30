@@ -43,6 +43,8 @@ namespace LoansAppWebApi.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateLoan(CreateLoanRequest loanRequest)
         {
+
+            // you can add this as extension for HttpContext
             var id = HttpContext.User.Claims.FirstOrDefault(x => x.Type == AuthConstants.ClaimNames.Id)?.Value;
 
             if (id != null)
@@ -153,65 +155,6 @@ namespace LoansAppWebApi.Controllers
             return Ok(_mapper.Map<Loans, LoanDTO>(loan));
         }
 
-        //[AllowAnonymous]
-        //[HttpPost("seedLoans")]
-        //public async Task SeedLoansForMyUser()
-        //{
-        //    Guid userId = new Guid("64990441-6b33-42db-9353-b558d774856a");
-        //    List<Guid> categoryIds = new List<Guid>
-        //    {
-        //        new Guid("4047e098-4640-42a6-3168-08db5b951ceb"),
-        //        new Guid("2e9b1642-0566-468c-3169-08db5b951ceb"),
-        //        new Guid("f1a32e37-bc3c-4b0f-316a-08db5b951ceb"),
-        //        new Guid("a628fae9-902b-4f47-316b-08db5b951ceb"),
-        //        new Guid("9bf33620-7aac-4065-316c-08db5b951ceb"),
-        //        new Guid("00632b52-4c9b-47de-316d-08db5b951ceb")
-        //    };
-
-        //    List<Loans> loans = new List<Loans>();
-        //    Random random = new Random();
-
-        //    for (int i = 0; i < 10; i++) // Change 10 to the desired number of loans to seed
-        //    {
-        //        Loans loan = new Loans
-        //        {
-        //            Id = Guid.NewGuid(),
-        //            StartDate = DateTime.Now,
-        //            SumOfLoan = 1000, // Set your desired loan amount
-        //            SumOfPaidLoan = 500, // Set your desired paid loan amount
-        //            PercentsInYear = 5, // Set your desired percentage
-        //            Name = "Loan" + i.ToString(),
-        //            CategoryId = categoryIds[random.Next(categoryIds.Count)],
-        //            UserId = userId
-        //        };
-
-        //        loans.Add(loan);
-        //    }
-
-        //    await _context.Loans.AddRangeAsync(loans);
-        //    await _context.SaveChangesAsync();
-        //}
-
-
-        //[AllowAnonymous]
-
-        //[HttpPost("seedCategories")]
-        //public async Task Seed()
-        //{
-        //    await _context.Categories.AddRangeAsync(new List<Category>()
-        //    {
-        //        new Category() { CategoryName = Categories.Auto },
-        //        new Category() { CategoryName = Categories.Personal },
-        //        new Category() { CategoryName = Categories.Mortgage },
-        //        new Category() { CategoryName = Categories.Payday },
-        //        new Category() { CategoryName = Categories.Business },
-        //        new Category() { CategoryName = Categories.Student },
-        //    });
-
-        //    await _context.SaveChangesAsync();
-
-        //}
-
         [HttpPut("{loanId}")]
         public async Task<IActionResult> EditLoan([FromRoute] string loanId, [FromBody] LoanDTO editLoanDto)
         {
@@ -249,7 +192,6 @@ namespace LoansAppWebApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<LoanDTO>>> GetAll()
         {
-
             var id = HttpContext.GetUserClaimId();
             if (id != null)
             {
