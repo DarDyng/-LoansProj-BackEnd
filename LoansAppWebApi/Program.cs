@@ -36,6 +36,18 @@ builder.Services.AddIdentity<User, Role>()
     .AddUserStore<UserStore<User, Role, ApplicationDbContext, Guid>>()
     .AddRoleStore<RoleStore<Role, ApplicationDbContext, Guid>>();
 
+    // 1.
+    // remove sensitive information (use azure keyvalue storage to implement this)
+
+    // 2.
+    // also you can add custom exceptions for every case in order to have better control on your application
+
+    // 3.
+    // and if you have time it`ll be good to add MediatR (CQRS) to segregate READS and Writes
+
+    // 4. 
+    // I noticed that you don`t have RT (Refresh Token), if you add this you authoriazation/authentification mechaniazm
+
 builder.Services.Configure<IdentityOptions>(options =>
 {
     // Default Password settings.
