@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using LoansAppWebApi.Core.Interfaces;
 using LoansAppWebApi.Models.DbModels;
 using LoansAppWebApi.Models.DTO_s.Resposnes;
+using LoansAppWebApi.Models.Exceptions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,13 +21,26 @@ namespace LoansAppWebApi.Core.Services
             _userManager = userManager;
         }
 
-         public async Task<User?> GetUserByEmail(string email)
+        public async Task<User?> GetUserByEmail(string email)
         {
             return await _userManager.FindByEmailAsync(email);
         }
 
         public async Task<CreateUserResponse> CreateUser(User user, string password)
         {
+            if (string.IsNullOrEmpty(password) || string.IsNullOrWhiteSpace(password))
+                return new CreateUserResponse() { Succeeded = false, User = user };
+
+            if (await _userManager.Users.AnyAsync(x => x.Email == user.Email))
+            {
+                throw new UserEmailAlreadyExistsException($"User with email - {user.Email} already exists!");
+            }
+
+            if (await _userManager.Users.AnyAsync(x => x.UserName == user.UserName))
+            {
+                throw new UserUsernameAlreadyExistsException($"User with username - {user.UserName} already exists!");
+            }
+
             var result = await _userManager.CreateAsync(user, password);
 
             return new CreateUserResponse() { Succeeded = result.Succeeded, User = user };

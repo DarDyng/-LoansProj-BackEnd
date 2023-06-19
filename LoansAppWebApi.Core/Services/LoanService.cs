@@ -22,10 +22,12 @@ namespace LoansAppWebApi.Core.Services
             _mapper = mapper;
         }
 
-        public async Task CreateLoan(Loans loanToAdd)
+        public async Task<Loans> CreateLoan(Loans loanToAdd)
         {
-            await _context.AddAsync(loanToAdd);
+            var res = await _context.AddAsync(loanToAdd);
             await _context.SaveChangesAsync();
+
+            return res.Entity;
         }
 
         public async Task<IEnumerable<LoanDTO>> GetUserLoans(Guid userId) 
@@ -40,10 +42,12 @@ namespace LoansAppWebApi.Core.Services
         public async Task<Loans> GetLoanById(Guid id)
             => await _context.Loans.FirstOrDefaultAsync(x => x.Id == id);
 
-        public async Task UpdateLoan(Loans loans)
+        public async Task<Loans> UpdateLoan(Loans loans)
         {
-            _context.Loans.Update(loans);
+            var updatedLoan = _context.Loans.Update(loans);
             await _context.SaveChangesAsync();
+            
+            return updatedLoan.Entity;
         }
 
         public async Task<bool> DeleteLoan(Loans loans)

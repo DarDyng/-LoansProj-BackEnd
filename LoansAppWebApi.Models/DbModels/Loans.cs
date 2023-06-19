@@ -34,5 +34,35 @@ namespace LoansAppWebApi.Models.DbModels
         [IgnoreDataMember]
         public User User { get; set; }
 
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+
+            var other = (Loans)obj;
+            return Id == other.Id &&
+                   StartDate == other.StartDate &&
+                   NullableEquals(EndDate, other.EndDate) &&
+                   Math.Abs(SumOfLoan - other.SumOfLoan) < float.Epsilon &&
+                   Math.Abs(SumOfPaidLoan - other.SumOfPaidLoan) < float.Epsilon &&
+                   Math.Abs(PercentsInYear - other.PercentsInYear) < float.Epsilon &&
+                   Name == other.Name &&
+                   IsPaid == other.IsPaid &&
+                   CategoryId == other.CategoryId &&
+                   UserId == other.UserId;
+        }
+
+        private bool NullableEquals<T>(T? obj1, T? obj2) where T : struct
+        {
+            if (obj1.HasValue && obj2.HasValue)
+            {
+                return obj1.Value.Equals(obj2.Value);
+            }
+
+            return obj1.HasValue == obj2.HasValue;
+        }
     }
 }

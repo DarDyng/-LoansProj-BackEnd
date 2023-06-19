@@ -13,7 +13,7 @@ namespace LoansAppWebApi.Core.Configuration.Profiles
                 .ForMember(dest => dest.SumOfPaidLoan,
                     opt => opt.MapFrom(src => src.SumOfPaidLoan))
                 .ForMember(dest => dest.Category,
-                    opts => opts.MapFrom(src => src.Category.CategoryName.ToString()))
+                    opts => opts.MapFrom(src => src.Category.ToString()))
                 .ForMember(dest => dest.Name,
                     opts => opts.MapFrom(src => src.Name))
                 .ForMember(dest => dest.StartDate,
